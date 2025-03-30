@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import QRCode from 'qrcode';
 import styles from './App.module.css';
 
 function App() {
@@ -12,11 +11,18 @@ function App() {
       return;
     }
   
-    const formattedText = text.startsWith('http') ? text : `https://${text}`;
+    const generateQR = async () => {
+      const QRCode = await import('qrcode');
+      const formattedText = text.startsWith('http') ? text : `https://${text}`;
+      try {
+        const dataUrl = await QRCode.toDataURL(formattedText);
+        setQr(dataUrl);
+      } catch (err) {
+        console.error(err);
+      }
+    };
   
-    QRCode.toDataURL(formattedText)
-      .then((dataUrl) => setQr(dataUrl))
-      .catch((err) => console.error(err));
+    generateQR();
   }, [text]);
   
 
